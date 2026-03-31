@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DRAZA — scars of GAZA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Georgia', serif; margin: 0; background: #f8f8f6; color: #222; }
+    header { text-align: center; padding: 50px 20px 10px; font-size: 30px; letter-spacing: 3px; }
+    .subtitle { text-align: center; font-size: 12px; letter-spacing: 2px; color: #777; margin-bottom: 20px; }
+    nav { text-align: center; margin-bottom: 40px; }
+    nav a { margin: 0 15px; text-decoration: none; color: #666; font-size: 14px; cursor: pointer; }
+    nav a:hover { color: #000; }
+
+    .page { display: none; }
+    .active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 80px;
+      padding: 60px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .item { 
+      background: white; 
+      padding: 0; 
+      position: relative; 
+      cursor: pointer; 
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .item:hover { 
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .item-image-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item img { 
+      width: 100%; 
+      height: 420px; 
+      object-fit: cover; 
+      display: block;
+    }
+
+    .overlay { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0, 0, 0, 0.5); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      opacity: 0; 
+      transition: opacity 0.3s ease;
+    }
+
+    .item:hover .overlay { 
+      opacity: 1; 
+    }
+
+    .buy-btn { 
+      background: white; 
+      padding: 12px 28px; 
+      border-radius: 30px; 
+      font-size: 14px; 
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .buy-btn:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .item-info {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .item-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    /* MODAL */
+    .modal { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0, 0, 0, 0.9); 
+      align-items: center; 
+      justify-content: center; 
+      flex-direction: column;
+      z-index: 1000;
+      padding: 40px 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal img { 
+      max-width: 100%; 
+      max-height: 60vh;
+      margin-bottom: 30px;
+      object-fit: contain;
+    }
+
+    .modal-info {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    .modal-price {
+      font-size: 28px;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 25px;
+    }
+
+    .purchase-btn {
+      display: inline-block;
+      padding: 15px 35px;
+      background: #000;
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .purchase-btn:hover {
+      background: #333;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 36px;
+      color: white;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+      color: #ccc;
+    }
+
+    .section { 
+      padding: 40px; 
+      text-align: center; 
+      max-width: 900px; 
+      margin: auto; 
+    }
+    
+    .section h2 { 
+      font-size: 28px; 
+      margin-bottom: 30px; 
+      letter-spacing: 2px; 
+    }
+    
+    .statement-content { 
+      text-align: left; 
+      line-height: 1.9; 
+      font-size: 16px; 
+      color: #333; 
+      max-width: 800px; 
+      margin: auto; 
+    }
+    .statement-content p { 
+      margin-bottom: 18px; 
+    }
+    .statement-content strong { 
+      font-weight: 600; 
+    }
+    .statement-content em { 
+      font-style: italic; 
+    }
+    .statement-highlight { 
+      font-size: 20px; 
+      font-weight: 600; 
+      letter-spacing: 1px; 
+      margin: 40px 0 30px 0; 
+    }
+    .statement-bullet { 
+      margin: 20px 0; 
+      padding-left: 0; 
+      position: relative; 
+    }
+
+    .donate-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 30px;
+      border-radius: 30px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .donate-btn:hover {
+      background: #333;
+    }
+
+    ul { 
+      list-style: none; 
+      padding-left: 0; 
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+        padding: 40px 20px;
+      }
+
+      .modal {
+        padding: 20px;
+      }
+
+      .close-modal {
+        top: 15px;
+        right: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>DRAZA</header>
+<div class="subtitle">scars of GAZA — by Ahmed.KM</div>
+
+<nav>
+  <a onclick="showPage('shop')">Shop</a>
+  <a onclick="showPage('about')">Artist Statement</a>
+  <a onclick="showPage('donate')">DONATE</a>
+</nav>
+
+<!-- SHOP -->
+<div id="shop" class="page active">
+  <div class="grid">
+    <div class="item" onclick="openModal(0)">
+      <div class="item-image-wrapper">
+        <img src="https://images.unsplash.com/photo-1578926314433-8b5864f3cdb4?w=400&h=420&fit=crop" alt="I will not forget">
+        <div class="overlay">
+          <button class="buy-btn">BUY NOW</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-title">I Will Not Forget</div>
+        <div class="item-price">$250</div>
+      </div>
+    </div>
+
+    <div class="item" onclick="openModal(1)">
+      <div class="item-image-wrapper">
+        <img src="https://images.unsplash.com/photo-1579783902614-e3fb5141b0cb?w=400&h=420&fit=crop" alt="Hope in Yellow">
+        <div class="overlay">
+          <button class="buy-btn">BUY NOW</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-title">Hope in Yellow</div>
+        <div class="item-price">$280</div>
+      </div>
+    </div>
+
+    <div class="item" onclick="openModal(2)">
+      <div class="item-image-wrapper">
+        <img src="https://images.unsplash.com/photo-1561214115-6d2f1b0609fa?w=400&h=420&fit=crop" alt="Scars Children Suffer">
+        <div class="overlay">
+          <button class="buy-btn">BUY NOW</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-title">Scars Children Suffer</div>
+        <div class="item-price">$300</div>
+      </div>
+    </div>
+
+    <div class="item" onclick="openModal(3)">
+      <div class="item-image-wrapper">
+        <img src="https://images.unsplash.com/photo-1578926341826-212d80b78055?w=400&h=420&fit=crop" alt="They Blindfolded Me">
+        <div class="overlay">
+          <button class="buy-btn">BUY NOW</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-title">They Blindfolded Me</div>
+        <div class="item-price">$320</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="page section">
+  <h2>About DRAZA</h2>
+  <div class="statement-content">
+    <p><strong style="font-size: 18px;">Drawn from pain. Drawn for Gaza.</strong></p>
+    
+    <p>My name is Ahmed, and I never imagined I would be introducing myself this way. My fate placed me far from war studying abroad, alone, while everything I love was burning behind me.</p>
+    
+    <p>I'm not just an artist. <em>I'm a voice from the ashes.</em></p>
+    
+    <p>I've lost 65 members of my family, and 34 of my friends. Now I fight every single day to save what's left: my mother, my little angel Eileen, my father, and my brother, before it's too late.</p>
+    
+    <p>We once had a life full of color, pride, and dignity.<br>We laughed, we lived. But that world is gone.<br>Now, I'm left with memories, grief, and one tool that still listens to me: my art. I never imagined I'd be in a place where survival depends on art… and on strangers with kind hearts.</p>
+    
+    <div class="statement-bullet">
+      <strong>I was born with the gift of drawing and I started to draw 13 years ago in 2012.</strong> I won 1st place in a UNRWA art competition across Gaza in 2017. That award of oil colors and gouache paints lit something in me. Since then, I've poured my soul into painting. I sold artworks in galleries and shops, hoping someone might see me, support me, help my voice be heard. No one did.
+    </div>
+    
+    <div class="statement-bullet">
+      <strong>So I created my own stage. I started from zero.</strong> And today, I've reached over 55 million views and nearly 200,000 followers on TikTok. But this isn't about fame. It's about saving lives. About telling the world what war really does to families. About giving voice to those who can't speak anymore.
+    </div>
+    
+    <div class="statement-bullet">
+      <strong>Every artwork you see here is not just paint.</strong> It's grief, memory, and a prayer for one more sunrise with the people I love.
+    </div>
+    
+    <p style="margin-top: 40px; font-size: 17px; font-weight: 600;">I don't want to live as an orphan.<br>And I hope this story doesn't end the way so many of ours have.</p>
+    
+    <p style="margin-top: 40px; font-style: italic; color: #666;">Welcome to DRAZA — Drawn from pain. Drawn for Gaza.</p>
+  </div>
+</div>
+
+<!-- DONATE -->
+<div id="donate" class="page section">
+  <h2>Support & Donate</h2>
+  <div style="max-width:700px;margin:auto;text-align:center;line-height:1.8;font-size:15px;color:#333;">
+    <p><strong>My name is Ahmed.</strong></p>
+    <p>I'm a young Palestinian artist living abroad, and I feel ashamed that I was forced to ask for help here.</p>
+    <p>My family is still trapped in a war zone. We have lost <strong>66 relatives</strong> and <strong>35 friends</strong>. I am the only one outside who can provide for them—and for myself—after being left alone as a child.</p>
+    <p>I don't have connections. I don't have wealth. I don't have stability.<br><em>But I have my art.</em></p>
+    <p><strong>Medical Condition:</strong></p>
+    <p style="font-size:14px;color:#555;">Progressive spinal curvature, degenerative disc disease, nerve compression, and chronic pain severely impact my daily life. I also face neurological concerns that require ongoing medical attention.</p>
+    <p>Drawing is the only thing I truly own.<br>It's my voice…<br>my strength…<br>and the only path I have to support my family from afar.</p>
+    <p>I'm trying to turn my talent into something sustainable, but starting from zero in a foreign country is extremely difficult.</p>
+    <p><strong>This is not about comfort. This is survival.</strong></p>
+    <p><strong>Your support will help me:</strong></p>
+    <ul>
+      <li>✓ Access physical therapy and healthcare</li>
+      <li>✓ Support my mother, my brother, and my little sister Eileen in Gaza</li>
+      <li>✓ Buy essential art tools and materials</li>
+      <li>✓ Take courses and improve my skills</li>
+      <li>✓ Build a stable artistic career</li>
+      <li>✓ Keep hope alive</li>
+    </ul>
+    <p>Every donation, no matter how small, brings me one step closer to building a future where my art becomes a lifeline—for me and for my family.</p>
+    <p><em>Thank you for believing in my story.</em></p>
+  </div>
+
+  <a href="https://chuffed.org/project/158882-a-family-in-war-a-survivor-son-with-pencil-i-draw-to-survive" target="_blank" class="donate-btn">
+    DONATE NOW
+  </a>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
+  <button class="close-modal" onclick="closeModal()">×</button>
+  <div class="modal-content">
+    <img id="modalImg" alt="Artwork">
+    <div class="modal-info">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-price" id="modalPrice"></div>
+      <a id="purchaseBtn" href="#" target="_blank" class="purchase-btn">PURCHASE</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const artworks = [
+  {
+    title: "I Will Not Forget",
+    price: "$250",
+    url: "https://chuffed.org/project/158882-a-family-in-war-a-survivor-son-with-pencil-i-draw-to-survive",
+    image: "https://images.unsplash.com/photo-1578926314433-8b5864f3cdb4?w=800&h=600&fit=crop"
+  },
+  {
+    title: "Hope in Yellow",
+    price: "$280",
+    url: "https://chuffed.org/project/158882-a-family-in-war-a-survivor-son-with-pencil-i-draw-to-survive",
+    image: "https://images.unsplash.com/photo-1579783902614-e3fb5141b0cb?w=800&h=600&fit=crop"
+  },
+  {
+    title: "Scars Children Suffer",
+    price: "$300",
+    url: "https://chuffed.org/project/158882-a-family-in-war-a-survivor-son-with-pencil-i-draw-to-survive",
+    image: "https://images.unsplash.com/photo-1561214115-6d2f1b0609fa?w=800&h=600&fit=crop"
+  },
+  {
+    title: "They Blindfolded Me",
+    price: "$320",
+    url: "https://chuffed.org/project/158882-a-family-in-war-a-survivor-son-with-pencil-i-draw-to-survive",
+    image: "https://images.unsplash.com/photo-1578926341826-212d80b78055?w=800&h=600&fit=crop"
+  }
+];
+
+let currentArtwork = 0;
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+function openModal(index) {
+  currentArtwork = index;
+  const artwork = artworks[index];
+  document.getElementById('modalImg').src = artwork.image;
+  document.getElementById('modalTitle').innerText = artwork.title;
+  document.getElementById('modalPrice').innerText = artwork.price;
+  document.getElementById('purchaseBtn').href = artwork.url;
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// Close modal when pressing Escape
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeModal();
+  }
+});
+</script>
+
+</body>
+</html>
